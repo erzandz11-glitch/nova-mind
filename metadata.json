@@ -1,0 +1,8 @@
+{
+  "name": "NOVA MIND — Enterprise LMS & Second Brain",
+  "description": "Enterprise-grade Learning Management System and Second Brain for modern solopreneurs, featuring neural skill trees, masterclass streaming, and knowledge vaults.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

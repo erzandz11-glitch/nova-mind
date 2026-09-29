@@ -10,12 +10,12 @@ import {
   VolumeX,
   Command,
   Activity,
-  Award
+  Award,
+  Globe,
+  ArrowLeft
 } from 'lucide-react';
 import { UserGamificationState, FrontierFacultyId } from '../types';
 import { soundEngine } from '../lib/audio';
-import { NovaEcosystemSwitcher } from './NovaEcosystemSwitcher';
-import { NovaIdentityControl } from '../nova-os/NovaIdentityControl';
 import { SkillPassportModal } from './SkillPassportModal';
 
 interface HeaderProps {
@@ -82,7 +82,16 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        <NovaEcosystemSwitcher currentId="mind" />
+        {/* Quick Return to Main NOVA Platform */}
+        <a
+          href="https://nova-digital-lab.vercel.app"
+          onClick={() => soundEngine.playClick()}
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-950/40 hover:bg-cyan-500/20 text-cyan-300 hover:text-cyan-200 border border-cyan-500/30 hover:border-cyan-400 font-mono text-xs font-semibold shadow-[0_0_12px_rgba(6,182,212,0.15)] transition-all shrink-0"
+          title="Kembali ke Platform Utama NOVA"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>NOVA</span>
+        </a>
 
         {/* Desktop Command Bar Trigger */}
         <div 
@@ -212,10 +221,7 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="hidden sm:inline">PASSPORT</span>
         </button>
 
-        {/* 5. Canonical NOVA ID & Google Auth */}
-        <NovaIdentityControl />
-
-        {/* 6. Acoustic SFX Feedback Toggle */}
+        {/* 5. Acoustic SFX Feedback Toggle */}
         <button
           onClick={() => {
             soundEngine.playClick();

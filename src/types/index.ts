@@ -281,7 +281,10 @@ export type FrontierFacultyId =
   | 'mindset_cognitive'
   | 'quant_macro_finance'
   | 'crypto_defi_web3'
-  | 'ai_autonomous_swarms';
+  | 'ai_autonomous_swarms'
+  | 'game_dev_media'
+  | 'fullstack_web_mobile'
+  | 'digital_business';
 
 export interface FrontierFacultyLesson {
   id: string;
@@ -309,7 +312,7 @@ export interface FrontierFaculty {
   shortTitle: string;
   iconName: string;
   emoji: string;
-  themeColor: 'cyan' | 'amber' | 'emerald' | 'violet' | 'sky' | 'rose' | 'indigo';
+  themeColor: 'cyan' | 'amber' | 'emerald' | 'violet' | 'sky' | 'rose' | 'indigo' | 'fuchsia' | 'orange' | 'teal';
   accentHex: string;
   glowClass: string;
   borderClass: string;

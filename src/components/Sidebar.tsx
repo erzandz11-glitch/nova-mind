@@ -8,7 +8,9 @@ import {
   X,
   ChevronRight,
   Flame,
-  Settings
+  Settings,
+  Globe,
+  ArrowLeft
 } from 'lucide-react';
 import { UserGamificationState, FrontierFacultyId } from '../types';
 import { FRONTIER_FACULTIES } from '../data/frontierFacultiesData';
@@ -102,6 +104,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* 4 Clean Navigation Tabs */}
           <div className="px-3 py-4 space-y-1">
+            {/* Quick Return to Main NOVA Platform */}
+            <a
+              href="https://nova-digital-lab.vercel.app"
+              onClick={() => soundEngine.playClick()}
+              className="group flex items-center justify-between px-3 py-2 rounded-lg text-xs bg-cyan-950/30 hover:bg-cyan-500/20 text-cyan-300 hover:text-cyan-200 border border-cyan-500/30 hover:border-cyan-400 transition-all mb-3 shadow-[0_0_12px_rgba(6,182,212,0.15)]"
+            >
+              <div className="flex items-center gap-2">
+                <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+                <span className="font-semibold">Kembali ke NOVA</span>
+              </div>
+              <Globe className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100" />
+            </a>
+
             <span className="px-3 text-[10px] font-mono tracking-wider text-zinc-500 uppercase block mb-1.5 font-medium">
               Navigation
             </span>

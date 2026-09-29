@@ -10,7 +10,9 @@ import {
   VolumeX,
   Command,
   Activity,
-  Award
+  Award,
+  Globe,
+  ArrowLeft
 } from 'lucide-react';
 import { UserGamificationState, FrontierFacultyId } from '../types';
 import { soundEngine } from '../lib/audio';
@@ -76,6 +78,17 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Quick Return to Main NOVA Platform */}
+        <a
+          href="https://nova-digital-lab.vercel.app"
+          onClick={() => soundEngine.playClick()}
+          className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-950/40 hover:bg-cyan-500/20 text-cyan-300 hover:text-white border border-cyan-500/30 hover:border-cyan-400 text-xs font-semibold transition-all shrink-0 group"
+          title="Kembali ke NOVA Platform & Store"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+          <span>Kembali ke NOVA</span>
+        </a>
 
         {/* Clean Linear-style Search Input with HUD brackets */}
         <div className="relative flex items-center w-full max-w-xs sm:max-w-sm">

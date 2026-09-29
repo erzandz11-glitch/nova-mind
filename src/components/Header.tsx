@@ -10,12 +10,13 @@ import {
   VolumeX,
   Command,
   Activity,
-  Award,
-  Globe,
-  ArrowLeft
+  Award
 } from 'lucide-react';
 import { UserGamificationState, FrontierFacultyId } from '../types';
 import { soundEngine } from '../lib/audio';
+import { NovaEcosystemSwitcher } from './NovaEcosystemSwitcher';
+import { NovaIdentityControl } from '../nova-os/NovaIdentityControl';
+import { SkillPassportModal } from './SkillPassportModal';
 
 interface HeaderProps {
   userState: UserGamificationState;
@@ -32,16 +33,19 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleSidebar,
   onOpenWalletModal,
   soundEnabled,
-  onToggleSound
+  onToggleSound,
+  activeFacultyId
 }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [showXpTooltip, setShowXpTooltip] = useState(false);
+  const [isPassportOpen, setIsPassportOpen] = useState(false);
 
   const xpCurrentTier = userState.xp % 300;
   const xpProgressPercent = Math.min(100, Math.round((xpCurrentTier / 300) * 100));
 
   return (
+    <>
     <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8 bg-[#030712]/85 backdrop-blur-xl border-b border-cyan-500/20 shadow-[0_4px_30px_rgba(0,0,0,0.6)]">
       {/* Left: Mobile Toggle & Cyber Logo */}
       <div className="flex items-center gap-3 sm:gap-6 flex-1 max-w-lg">
@@ -64,9 +68,8 @@ export const Header: React.FC<HeaderProps> = ({
           }}
           className="hidden sm:flex items-center gap-2.5 cursor-pointer group shrink-0"
         >
-          <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-950/80 border border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.35)] group-hover:scale-105 transition-transform">
-            <Zap className="w-4 h-4 text-cyan-400 fill-cyan-400/20" />
-            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-cyan-400 animate-ping opacity-75" />
+          <div className="relative flex items-center justify-center w-8 h-8 rounded-full p-[1px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-purple-500 shadow-[0_0_15px_rgba(6,182,212,0.35)] group-hover:scale-105 transition-transform overflow-hidden">
+            <img src="/nova-logo.jpg" alt="NOVA Logo" className="w-full h-full object-cover rounded-full scale-105" />
           </div>
 
           <div className="flex flex-col">
@@ -79,28 +82,21 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Quick Return to Main NOVA Platform */}
-        <a
-          href="https://nova-digital-lab.vercel.app"
-          onClick={() => soundEngine.playClick()}
-          className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-cyan-950/40 hover:bg-cyan-500/20 text-cyan-300 hover:text-white border border-cyan-500/30 hover:border-cyan-400 text-xs font-semibold transition-all shrink-0 group"
-          title="Kembali ke NOVA Platform & Store"
-        >
-          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-          <span>Kembali ke NOVA</span>
-        </a>
+        <NovaEcosystemSwitcher currentId="mind" />
 
-        {/* Clean Linear-style Search Input with HUD brackets */}
-        <div className="relative flex items-center w-full max-w-xs sm:max-w-sm">
-          <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 pointer-events-none" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search tracks, systems, formulas..."
-            className="w-full pl-8 pr-12 py-1.5 rounded-lg bg-zinc-900/60 border border-white/10 focus:border-cyan-400/60 text-xs text-white placeholder:text-zinc-500 focus:outline-none transition-all shadow-inner"
-          />
-          <div className="absolute right-2.5 flex items-center gap-0.5 text-[10px] font-mono text-zinc-500 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-white/5 pointer-events-none">
+        {/* Desktop Command Bar Trigger */}
+        <div 
+          onClick={() => {
+            soundEngine.playClick();
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }));
+          }}
+          className="hidden md:flex relative items-center w-full max-w-xs sm:max-w-sm cursor-pointer group"
+        >
+          <Search className="w-3.5 h-3.5 text-cyan-400 absolute left-3 pointer-events-none group-hover:scale-110 transition-transform" />
+          <div className="w-full pl-8 pr-12 py-1.5 rounded-lg bg-zinc-900/60 border border-white/10 group-hover:border-cyan-400/60 text-xs text-zinc-400 group-hover:text-zinc-200 transition-all shadow-inner truncate">
+            Search faculties, neural labs...
+          </div>
+          <div className="absolute right-2.5 flex items-center gap-0.5 text-[10px] font-mono text-zinc-400 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-white/5 pointer-events-none">
             <Command className="w-2.5 h-2.5" />
             <span>K</span>
           </div>
@@ -108,8 +104,20 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right: Gamification & Telemetry Dashboard Ribbon */}
-      <div className="flex items-center gap-3 sm:gap-5">
-        {/* 1. ⚡ 3,850 XP Level Bar (Interactive telemetry) */}
+      <div className="flex items-center gap-2 sm:gap-4">
+        {/* Mobile Command Trigger (P0) */}
+        <button
+          onClick={() => {
+            soundEngine.playClick();
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }));
+          }}
+          className="md:hidden flex items-center justify-center p-2 rounded-xl bg-zinc-900/60 border border-white/10 text-cyan-400 hover:text-white cursor-pointer transition-all"
+          title="Open Command Search (⌘K)"
+        >
+          <Search className="w-4 h-4" />
+        </button>
+
+        {/* 1. ⚡ XP Level Bar (Interactive telemetry) */}
         <div
           onMouseEnter={() => setShowXpTooltip(true)}
           onMouseLeave={() => setShowXpTooltip(false)}
@@ -160,11 +168,9 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        {/* 2. 🔥 21d Streak (Animated flame with glowing amber badge) */}
+        {/* 2. 🔥 21d Streak */}
         <div
-          onClick={() => {
-            soundEngine.playStreak();
-          }}
+          onClick={() => soundEngine.playStreak()}
           className="group cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-950/40 to-orange-950/20 border border-amber-500/30 hover:border-amber-400/80 shadow-[0_0_20px_rgba(245,158,11,0.2)] transition-all active:scale-95"
           title="Daily Learning Streak"
         >
@@ -193,7 +199,23 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </button>
 
-        {/* 4. Acoustic SFX Feedback Toggle */}
+        {/* 4. Sovereign Skill Passport / Certificate Modal Trigger */}
+        <button
+          onClick={() => {
+            soundEngine.playActivate();
+            setIsPassportOpen(true);
+          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/40 font-mono text-xs text-cyan-300 font-semibold shadow-[0_0_15px_rgba(6,182,212,0.15)] transition-all cursor-pointer"
+          title="Open Sovereign Proof of Mastery Passport"
+        >
+          <Award className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="hidden sm:inline">PASSPORT</span>
+        </button>
+
+        {/* 5. Canonical NOVA ID & Google Auth */}
+        <NovaIdentityControl />
+
+        {/* 6. Acoustic SFX Feedback Toggle */}
         <button
           onClick={() => {
             soundEngine.playClick();
@@ -210,5 +232,26 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
       </div>
     </header>
+
+    {/* Skill Passport Modal */}
+    <SkillPassportModal
+      isOpen={isPassportOpen}
+      onClose={() => setIsPassportOpen(false)}
+      userState={userState}
+    />
+
+    {/* Context Breadcrumbs Sub-Bar */}
+    <div className="border-b border-cyan-900/30 bg-[#02050c]/90 px-4 sm:px-6 lg:px-8 py-1.5 flex items-center overflow-x-auto no-scrollbar gap-1.5 text-[11px] font-mono text-zinc-400">
+      <span className="text-zinc-600 shrink-0 font-bold">NOVA OS</span>
+      <span className="text-zinc-700 shrink-0">/</span>
+      <span className="text-sky-400 font-semibold shrink-0">MIND</span>
+      <span className="text-zinc-700 shrink-0">/</span>
+      <span className="text-zinc-200 font-semibold shrink-0 uppercase">
+        {activeFacultyId ? activeFacultyId.replace(/_/g, ' ') : 'CORE CURRICULUM'}
+      </span>
+      <span className="text-zinc-700 shrink-0">/</span>
+      <span className="text-zinc-400 shrink-0">ARENA</span>
+    </div>
+    </>
   );
 };

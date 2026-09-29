@@ -32,6 +32,7 @@ import { ActiveDecisionSpotlight } from '../components/ActiveDecisionSpotlight';
 import { HolographicSkillConstellation } from '../components/HolographicSkillConstellation';
 import { FrontierBentoGrid } from '../components/FrontierBentoGrid';
 import { NodeQuizModal } from '../components/NodeQuizModal';
+import { NovaAICoachWidget } from '../components/NovaAICoachWidget';
 import { soundEngine } from '../lib/audio';
 
 interface RoadmapPageProps {
@@ -382,6 +383,13 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
           }}
         />
       )}
+
+      {/* Floating Gemini AI Socratic Sparring Coach */}
+      <NovaAICoachWidget
+        topicTitle={activeFaculty.headline}
+        facultyName={activeFaculty.name}
+        onRewardXp={(xp) => onCompleteWorkout(xp)}
+      />
     </div>
   );
 };

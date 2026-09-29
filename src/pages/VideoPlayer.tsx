@@ -177,8 +177,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ userState, onAddXp }) 
     );
   };
 
-  // Co-Pilot Chat Interactions
-  const handleSendCopilotQuery = (queryText: string) => {
+  // Co-Pilot Chat Interactions with Gemini AI
+  const handleSendCopilotQuery = async (queryText: string) => {
     if (!queryText.trim() || isCopilotTyping) return;
     soundEngine.playClick();
 
@@ -188,43 +188,49 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ userState, onAddXp }) 
       text: queryText,
       timestamp: formatTime(currentTime)
     };
-    setCopilotMessages((prev) => [...prev, userMsg]);
+    const updatedMessages = [...copilotMessages, userMsg];
+    setCopilotMessages(updatedMessages);
     setUserQuery('');
     setIsCopilotTyping(true);
 
-    setTimeout(() => {
-      let responseText = '';
-      let codeSnippet: string | undefined = undefined;
+    try {
+      const { GeminiAIService } = await import('../lib/geminiService');
+      const chatHistory = updatedMessages.map((m) => ({
+        role: m.sender === 'user' ? ('user' as const) : ('model' as const),
+        content: m.text,
+      }));
 
-      const lower = queryText.toLowerCase();
-      if (lower.includes('asymmetry') || lower.includes('formula')) {
-        responseText = `At ${formatTime(currentTime)}, Julian Vance explains the Asymmetric Payoff Law: P_asym = (Capital * Code) / (Labor^1.8). The objective is to keep downside strictly capped at your recurring burn rate while capturing open-ended compounding upside.`;
-        codeSnippet = `// Asymmetry Evaluation Kernel\nfunction evaluateConvexity(downsideRisk: number, potentialUpside: number): boolean {\n  return (potentialUpside / downsideRisk) >= 10.0; // Minimum 10x convexity threshold\n}`;
-      } else if (lower.includes('supabase') || lower.includes('rls') || lower.includes('security')) {
-        responseText = `In Supabase, Row-Level Security must enforce cryptographic tenant separation directly inside PostgreSQL. Never rely on frontend filtering!`;
-        codeSnippet = `CREATE POLICY "tenant_isolation" ON documents\nFOR ALL USING (tenant_id = auth.jwt() ->> 'tenant_id');`;
-      } else if (lower.includes('prompt') || lower.includes('claude') || lower.includes('armor')) {
-        responseText = `To prevent prompt injections in production, encapsulate all untrusted user payloads in explicit XML boundary tags and validate JSON output schemas with Zod.`;
-        codeSnippet = `<system>\nYou are a hardened parser.\n<untrusted_input>{{payload}}</untrusted_input>\n</system>`;
-      } else if (lower.includes('godot') || lower.includes('fsm') || lower.includes('state')) {
-        responseText = `In Godot 4.3 GDScript 2.0, state machines are implemented as decoupled child Node classes that emit signals upon state exit, keeping your physics tick free of nested if-else ladders.`;
-        codeSnippet = `class_name CombatState extends State\nfunc enter() -> void:\n    actor.play_animation("slash")`;
-      } else {
-        responseText = `Analyzing your query against the lecture material at timestamp ${formatTime(currentTime)}: The key principle is to replace synchronous human bottlenecks with deterministic, permissionless software leverage.`;
-      }
+      const reply = await GeminiAIService.chatWithCoach(
+        activeLesson.title,
+        activeCourse.title,
+        chatHistory,
+        queryText
+      );
 
-      const aiMsg: AICopilotMessage = {
-        id: 'ai_' + Date.now(),
-        sender: 'assistant',
-        text: responseText,
-        timestamp: 'Just now',
-        codeBlock: codeSnippet
-      };
-
-      setCopilotMessages((prev) => [...prev, aiMsg]);
+      soundEngine.playCorrect();
+      setCopilotMessages((prev) => [
+        ...prev,
+        {
+          id: 'ai_' + Date.now(),
+          sender: 'assistant',
+          text: reply,
+          timestamp: 'Just now'
+        }
+      ]);
+      onAddXp(20);
+    } catch (err) {
+      setCopilotMessages((prev) => [
+        ...prev,
+        {
+          id: 'ai_' + Date.now(),
+          sender: 'assistant',
+          text: 'Pikiran neural sedang berkonsolidasi. Silakan ulangi pertanyaan Anda.',
+          timestamp: 'Just now'
+        }
+      ]);
+    } finally {
       setIsCopilotTyping(false);
-      soundEngine.playComplete();
-    }, 700);
+    }
   };
 
   const completedExercisesCount = exercises.filter((e) => e.done).length;

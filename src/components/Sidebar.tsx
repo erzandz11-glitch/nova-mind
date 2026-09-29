@@ -37,7 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       to: '/',
       label: 'Curriculum Tracks',
       icon: Compass,
-      subtitle: '7 Frontier Faculties'
+      subtitle: '10 Frontier Faculties'
     },
     {
       to: '/simulation',

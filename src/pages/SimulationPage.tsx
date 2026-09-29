@@ -7,7 +7,9 @@ import {
   TrendingUp,
   Coins,
   Bot,
-  Sliders
+  Gamepad2,
+  Globe,
+  Briefcase
 } from 'lucide-react';
 import { UserGamificationState, FrontierFacultyId } from '../types';
 import { FRONTIER_FACULTIES } from '../data/frontierFacultiesData';
@@ -57,8 +59,14 @@ export const SimulationPage: React.FC<SimulationPageProps> = ({
         return Coins;
       case 'Bot':
         return Bot;
+      case 'Gamepad2':
+        return Gamepad2;
+      case 'Globe':
+        return Globe;
+      case 'Briefcase':
+        return Briefcase;
       default:
-        return Sliders;
+        return Brain;
     }
   };
 

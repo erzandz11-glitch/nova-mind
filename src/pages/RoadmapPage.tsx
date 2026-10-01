@@ -239,7 +239,36 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
       />
 
       {/* 4. ACTIVE FACULTY TACTICAL DRILL DECK & SYLLABUS ACCORDION */}
-      <div className="rounded-3xl bg-[#06091A]/95 border border-cyan-500/30 p-6 sm:p-10 space-y-8 hud-bracket shadow-2xl">
+      <div id="curriculum-deck" className="rounded-3xl bg-[#06091A]/95 border border-cyan-500/30 p-6 sm:p-10 space-y-8 hud-bracket shadow-2xl scroll-mt-20">
+        
+        {/* Fast 10 Faculty Tabs at Top of Curriculum Deck */}
+        <div className="space-y-2 pb-2">
+          <span className="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-wider block">
+            PILIH FAKULTAS PEMBELAJARAN (10 FRONTIER DOMAINS):
+          </span>
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-cyan-900/50">
+            {FRONTIER_FACULTIES.map((fac, idx) => {
+              const Icon = getFacultyIcon(fac.iconName);
+              const isSelected = fac.id === selectedFacultyId;
+              return (
+                <button
+                  key={fac.id}
+                  onClick={() => handleFacultyChange(fac.id)}
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-mono shrink-0 transition-all cursor-pointer ${
+                    isSelected
+                      ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.25)] font-bold'
+                      : 'bg-white/[0.03] text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.07] border border-white/10'
+                  }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-cyan-400' : 'text-zinc-500'}`} />
+                  <span>{idx < 9 ? '0' : ''}{idx + 1}. {fac.shortTitle}</span>
+                  <span className="text-[10px] opacity-70">({fac.modules.reduce((a, m) => a + m.lessons.length, 0)})</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Active Domain Header */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-white/10">
           <div className="space-y-2 max-w-3xl">
@@ -285,12 +314,28 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
 
         {/* Modules & Deep Lessons */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between text-xs font-mono text-zinc-400 uppercase tracking-wider">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono text-zinc-400 uppercase tracking-wider">
             <span className="text-cyan-400 font-bold flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" /> CURRICULUM SYLLABUS ({activeFaculty.modules.reduce((a, m) => a + m.lessons.length, 0)} LESSONS)
             </span>
-            <span className="text-zinc-500">Klik materi untuk mulai belajar & uji pemahaman</span>
+            <div className="flex items-center gap-3 text-zinc-400 text-xs">
+              <span className="text-zinc-500">Klik materi untuk belajar & kuis</span>
+              <button
+                onClick={() => {
+                  const allExpanded = activeFaculty.modules.every((m) => expandedModules[m.id]);
+                  const updated: Record<string, boolean> = { ...expandedModules };
+                  activeFaculty.modules.forEach((m) => {
+                    updated[m.id] = !allExpanded;
+                  });
+                  setExpandedModules(updated);
+                }}
+                className="px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-cyan-300 border border-white/10 transition-colors cursor-pointer text-[11px]"
+              >
+                {activeFaculty.modules.every((m) => expandedModules[m.id]) ? 'Collapse All' : 'Buka Semua Modul'}
+              </button>
+            </div>
           </div>
+
 
           <div className="space-y-3.5">
             {activeFaculty.modules.map((mod: FrontierFacultyModule, mIdx: number) => {

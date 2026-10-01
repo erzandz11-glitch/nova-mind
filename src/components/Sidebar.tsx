@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Compass,
   Zap,
@@ -31,6 +31,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeFacultyId,
   onSelectFaculty
 }) => {
+  const navigate = useNavigate();
+
   // 4 Primary Clean Navigation Tabs as requested by User
   const navTabs = [
     {
@@ -161,8 +163,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     key={faculty.id}
                     onClick={() => {
-                      soundEngine.playClick();
                       if (onSelectFaculty) onSelectFaculty(faculty.id);
+                      navigate('/');
+                      setTimeout(() => {
+                        const el = document.getElementById('curriculum-deck');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }, 100);
                       onClose();
                     }}
                     className={`w-full text-left flex items-center justify-between px-3 py-1.5 rounded-md text-xs transition-colors cursor-pointer ${

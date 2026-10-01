@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Terminal,
@@ -8,6 +8,9 @@ import {
   TrendingUp,
   Coins,
   Bot,
+  Gamepad2,
+  Globe,
+  Briefcase,
   Play,
   Layers,
   ChevronDown,
@@ -18,20 +21,23 @@ import {
   Sparkles,
   Shield,
   Activity,
-  ArrowRight
+  ArrowRight,
+  BookOpen
 } from 'lucide-react';
 import {
   RoadmapNode,
   UserGamificationState,
   FrontierFaculty,
   FrontierFacultyId,
-  FrontierFacultyModule
+  FrontierFacultyModule,
+  FrontierFacultyLesson
 } from '../types';
 import { FRONTIER_FACULTIES } from '../data/frontierFacultiesData';
 import { ActiveDecisionSpotlight } from '../components/ActiveDecisionSpotlight';
 import { HolographicSkillConstellation } from '../components/HolographicSkillConstellation';
 import { FrontierBentoGrid } from '../components/FrontierBentoGrid';
 import { NodeQuizModal } from '../components/NodeQuizModal';
+import { InteractiveLessonModal } from '../components/InteractiveLessonModal';
 import { NovaAICoachWidget } from '../components/NovaAICoachWidget';
 import { soundEngine } from '../lib/audio';
 
@@ -59,19 +65,81 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
 
   // Keep first module expanded
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({
-    mod_dit_1: true,
-    mod_en_1: true,
-    mod_bio_1: true,
-    mod_cog_1: true,
-    mod_fin_1: true,
-    mod_cry_1: true,
-    mod_ai_1: true
+    mod_dist_systems: true,
+    mod_grid_nuclear: true,
+    mod_cellular_epigenetics: true,
+    mod_stoic_crisis: true,
+    mod_macro_liquidity: true,
+    mod_btc_halving: true,
+    mod_llm_rag: true,
+    mod_godot_fundamentals: true,
+    mod_html_css_responsive: true,
+    mod_biz_model_lean: true
   });
 
   const [activeQuizNode, setActiveQuizNode] = useState<RoadmapNode | null>(null);
 
+  // Active Lesson Modal State
+  const [activeLessonModal, setActiveLessonModal] = useState<{
+    lesson: FrontierFacultyLesson;
+    moduleTitle: string;
+    moduleIndex: number;
+    lessonIndex: number;
+  } | null>(null);
+
   const activeFaculty: FrontierFaculty =
     FRONTIER_FACULTIES.find((f) => f.id === selectedFacultyId) || FRONTIER_FACULTIES[0];
+
+  // Flattened list of lessons for smooth next/prev navigation
+  const allFacultyLessons = useMemo(() => {
+    const result: {
+      lesson: FrontierFacultyLesson;
+      moduleTitle: string;
+      moduleIndex: number;
+      lessonIndex: number;
+    }[] = [];
+
+    activeFaculty.modules.forEach((mod, mIdx) => {
+      mod.lessons.forEach((les, lIdx) => {
+        result.push({
+          lesson: les,
+          moduleTitle: mod.title,
+          moduleIndex: mIdx,
+          lessonIndex: lIdx
+        });
+      });
+    });
+
+    return result;
+  }, [activeFaculty]);
+
+  const currentLessonFlatIndex = activeLessonModal
+    ? allFacultyLessons.findIndex((item) => item.lesson.id === activeLessonModal.lesson.id)
+    : -1;
+
+  const handleNextLesson = () => {
+    if (currentLessonFlatIndex >= 0 && currentLessonFlatIndex < allFacultyLessons.length - 1) {
+      const next = allFacultyLessons[currentLessonFlatIndex + 1];
+      setActiveLessonModal({
+        lesson: next.lesson,
+        moduleTitle: next.moduleTitle,
+        moduleIndex: next.moduleIndex,
+        lessonIndex: next.lessonIndex
+      });
+    }
+  };
+
+  const handlePrevLesson = () => {
+    if (currentLessonFlatIndex > 0) {
+      const prev = allFacultyLessons[currentLessonFlatIndex - 1];
+      setActiveLessonModal({
+        lesson: prev.lesson,
+        moduleTitle: prev.moduleTitle,
+        moduleIndex: prev.moduleIndex,
+        lessonIndex: prev.lessonIndex
+      });
+    }
+  };
 
   const handleToggleModule = (modId: string) => {
     soundEngine.playClick();
@@ -91,7 +159,6 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
   };
 
   const handleLaunchConstellationNode = (nodeId: string) => {
-    // Map constellation node to appropriate faculty drill
     if (nodeId === 'node_kernel') {
       handleFacultyChange('deep_it_cyber');
       const drill = FRONTIER_FACULTIES[0].drillNodes[0];
@@ -135,6 +202,12 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
         return Coins;
       case 'Bot':
         return Bot;
+      case 'Gamepad2':
+        return Gamepad2;
+      case 'Globe':
+        return Globe;
+      case 'Briefcase':
+        return Briefcase;
       default:
         return Layers;
     }
@@ -157,7 +230,7 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
         onLaunchNode={handleLaunchConstellationNode}
       />
 
-      {/* 3. 7 FRONTIER FACULTIES BENTO GRID (RICH & VIBRANT) */}
+      {/* 3. 10 FRONTIER FACULTIES BENTO GRID (RICH & VIBRANT) */}
       <FrontierBentoGrid
         faculties={FRONTIER_FACULTIES}
         selectedFacultyId={selectedFacultyId}
@@ -188,15 +261,9 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
             </p>
 
             <div className="flex items-center gap-4 text-xs font-mono text-zinc-400 pt-2">
-              <span className="flex items-center gap-1.5 text-zinc-200">
-                <Layers className="w-3.5 h-3.5 text-cyan-400" />
-                {activeFaculty.modules.length} Modules
-              </span>
+              <span>{activeFaculty.estimatedHours}h Estimated Effort</span>
               <span>·</span>
-              <span className="flex items-center gap-1.5 text-zinc-200">
-                <Clock className="w-3.5 h-3.5 text-amber-400" />
-                {activeFaculty.estimatedHours} Estimated Hours
-              </span>
+              <span>{activeFaculty.modules.length} Tactical Modules</span>
               <span>·</span>
               <span className="text-emerald-400 font-bold">
                 {activeFaculty.completionPercent}% Mastered
@@ -220,13 +287,13 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
         <div className="space-y-4">
           <div className="flex items-center justify-between text-xs font-mono text-zinc-400 uppercase tracking-wider">
             <span className="text-cyan-400 font-bold flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" /> CURRICULUM SYLLABUS ACCORDION
+              <Sparkles className="w-3.5 h-3.5" /> CURRICULUM SYLLABUS ({activeFaculty.modules.reduce((a, m) => a + m.lessons.length, 0)} LESSONS)
             </span>
-            <span>{activeFaculty.modules.reduce((a, m) => a + m.lessons.length, 0)} DEEP LESSONS</span>
+            <span className="text-zinc-500">Klik materi untuk mulai belajar & uji pemahaman</span>
           </div>
 
           <div className="space-y-3.5">
-            {activeFaculty.modules.map((mod: FrontierFacultyModule) => {
+            {activeFaculty.modules.map((mod: FrontierFacultyModule, mIdx: number) => {
               const isExpanded = expandedModules[mod.id] ?? false;
 
               return (
@@ -234,7 +301,7 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
                   key={mod.id}
                   className="rounded-2xl border border-white/10 bg-[#080C22] overflow-hidden transition-all shadow-md"
                 >
-                  {/* Module Bar */}
+                  {/* Module Header Bar */}
                   <div
                     onClick={() => handleToggleModule(mod.id)}
                     className="flex items-center justify-between p-4 sm:p-5 hover:bg-white/[0.04] cursor-pointer transition-colors"
@@ -267,50 +334,92 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
 
                   {/* Expanded Lessons */}
                   {isExpanded && (
-                    <div className="border-t border-white/10 p-4 sm:p-6 space-y-4 bg-black/40">
-                      {mod.lessons.map((lesson) => (
-                        <div
-                          key={lesson.id}
-                          className="p-4 rounded-xl border border-white/10 bg-zinc-950/80 hover:border-cyan-500/40 transition-all space-y-2.5"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2.5">
-                              {lesson.completed ? (
-                                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                              ) : (
-                                <Circle className="w-4 h-4 text-cyan-400 shrink-0" />
-                              )}
-                              <h5 className="text-xs sm:text-sm font-bold text-white">
-                                {lesson.title}
-                              </h5>
+                    <div className="border-t border-white/10 p-4 sm:p-6 space-y-3 bg-black/40">
+                      {mod.lessons.map((lesson: FrontierFacultyLesson, lIdx: number) => {
+                        const isCompleted =
+                          userState.completedNodeIds.includes(lesson.id) || lesson.completed;
+
+                        return (
+                          <div
+                            key={lesson.id}
+                            onClick={() => {
+                              soundEngine.playClick();
+                              setActiveLessonModal({
+                                lesson,
+                                moduleTitle: mod.title,
+                                moduleIndex: mIdx,
+                                lessonIndex: lIdx
+                              });
+                            }}
+                            className="p-4 sm:p-5 rounded-xl border border-white/10 bg-zinc-950/80 hover:border-cyan-400/60 hover:bg-cyan-950/15 transition-all space-y-3 cursor-pointer group shadow-sm"
+                          >
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                              <div className="flex items-center gap-3">
+                                {isCompleted ? (
+                                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                                ) : (
+                                  <Circle className="w-5 h-5 text-cyan-400 shrink-0 group-hover:scale-110 transition-transform" />
+                                )}
+                                <div>
+                                  <h5 className="text-sm sm:text-base font-bold text-white group-hover:text-cyan-300 transition-colors">
+                                    {lesson.title}
+                                  </h5>
+                                  <span className="text-[11px] font-mono text-zinc-400">
+                                    Pelajaran {lIdx + 1} dari {mod.lessons.length}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-3 shrink-0">
+                                <span className="font-mono text-xs text-zinc-400 flex items-center gap-1 bg-black/40 px-2.5 py-1 rounded-md border border-white/5">
+                                  <Clock className="w-3 h-3 text-zinc-500" />
+                                  {lesson.duration}
+                                </span>
+
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    soundEngine.playClick();
+                                    setActiveLessonModal({
+                                      lesson,
+                                      moduleTitle: mod.title,
+                                      moduleIndex: mIdx,
+                                      lessonIndex: lIdx
+                                    });
+                                  }}
+                                  className="px-3.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                                >
+                                  <BookOpen className="w-3.5 h-3.5" />
+                                  <span>{isCompleted ? 'Pelajari Ulang' : 'Buka Pelajaran'}</span>
+                                  <ArrowRight className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
                             </div>
-                            <span className="font-mono text-xs text-zinc-400 shrink-0 flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-zinc-500" />
-                              {lesson.duration}
-                            </span>
+
+                            <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed pl-8 border-l-2 border-cyan-500/40 font-sans">
+                              <strong className="text-cyan-400 font-mono">TELEMETRY: </strong>
+                              {lesson.keyTakeaway}
+                            </p>
+
+                            {lesson.codeSnippet && (
+                              <div className="pl-8">
+                                <pre className="p-3 rounded-lg bg-black/70 border border-white/10 font-mono text-[11px] text-cyan-300 overflow-x-auto leading-relaxed">
+                                  {lesson.codeSnippet.length > 150
+                                    ? lesson.codeSnippet.slice(0, 150) + '\n// ... klik untuk melihat kode lengkap'
+                                    : lesson.codeSnippet}
+                                </pre>
+                              </div>
+                            )}
+
+                            {lesson.formula && (
+                              <div className="pl-8 font-mono text-xs text-amber-300">
+                                <span className="text-zinc-500 mr-2">EQUATION:</span>
+                                <code>{lesson.formula}</code>
+                              </div>
+                            )}
                           </div>
-
-                          <p className="text-xs text-zinc-300 leading-relaxed pl-6 border-l-2 border-cyan-500/40">
-                            <strong className="text-cyan-400 font-mono">TELEMETRY: </strong>
-                            {lesson.keyTakeaway}
-                          </p>
-
-                          {lesson.codeSnippet && (
-                            <div className="pl-6">
-                              <pre className="p-3.5 rounded-xl bg-black/70 border border-white/10 font-mono text-[11px] text-cyan-300 overflow-x-auto leading-relaxed">
-                                {lesson.codeSnippet}
-                              </pre>
-                            </div>
-                          )}
-
-                          {lesson.formula && (
-                            <div className="pl-6 font-mono text-xs text-amber-300">
-                              <span className="text-zinc-500 mr-2">EQUATION:</span>
-                              <code>{lesson.formula}</code>
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -371,7 +480,32 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
         )}
       </div>
 
-      {/* Drill Quiz Modal */}
+      {/* Interactive Lesson Modal (For studying all 519 lessons & interactive quizzes) */}
+      {activeLessonModal && (
+        <InteractiveLessonModal
+          lesson={activeLessonModal.lesson}
+          faculty={activeFaculty}
+          moduleTitle={activeLessonModal.moduleTitle}
+          isOpen={true}
+          onClose={() => setActiveLessonModal(null)}
+          onCompleteLesson={(lessonId, xpReward) => {
+            onCompleteNode(lessonId, xpReward);
+          }}
+          onNextLesson={handleNextLesson}
+          onPrevLesson={handlePrevLesson}
+          hasNextLesson={
+            currentLessonFlatIndex >= 0 &&
+            currentLessonFlatIndex < allFacultyLessons.length - 1
+          }
+          hasPrevLesson={currentLessonFlatIndex > 0}
+          isCompleted={
+            userState.completedNodeIds.includes(activeLessonModal.lesson.id) ||
+            activeLessonModal.lesson.completed
+          }
+        />
+      )}
+
+      {/* Drill Quiz Modal (For certification nodes) */}
       {activeQuizNode && (
         <NodeQuizModal
           node={activeQuizNode}

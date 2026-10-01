@@ -6,7 +6,7 @@
 
 class GamifiedAudioEngine {
   private ctx: AudioContext | null = null;
-  public enabled: boolean = true;
+  public enabled: boolean = false;
 
   private init() {
     if (!this.ctx && typeof window !== 'undefined') {

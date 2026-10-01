@@ -7,6 +7,9 @@ import {
   TrendingUp,
   Coins,
   Bot,
+  Gamepad2,
+  Globe,
+  Briefcase,
   ArrowRight,
   Sparkles,
   Layers,
@@ -45,13 +48,18 @@ export const FrontierBentoGrid: React.FC<FrontierBentoGridProps> = ({
         return Coins;
       case 'Bot':
         return Bot;
+      case 'Gamepad2':
+        return Gamepad2;
+      case 'Globe':
+        return Globe;
+      case 'Briefcase':
+        return Briefcase;
       default:
         return Layers;
     }
   };
 
-  // Custom colors matching exact user brief:
-  // IT: Cyan, Energy: Amber, Biotech: Rose, Mindset: Violet, Finance: Emerald, Web3: Indigo, AI: Sky Blue
+  // Custom colors matching exact faculty branding
   const getCardTheme = (id: FrontierFacultyId) => {
     switch (id) {
       case 'deep_it_cyber':
@@ -72,10 +80,10 @@ export const FrontierBentoGrid: React.FC<FrontierBentoGridProps> = ({
         };
       case 'biotech_longevity':
         return {
-          glowBorder: 'hover:border-rose-400 group-hover:shadow-[0_0_30px_rgba(244,63,94,0.25)]',
-          headerBg: 'bg-rose-950/40 text-rose-400 border-rose-500/30',
-          accentText: 'text-rose-400',
-          ringStroke: '#f43f5e',
+          glowBorder: 'hover:border-emerald-400 group-hover:shadow-[0_0_30px_rgba(16,185,129,0.25)]',
+          headerBg: 'bg-emerald-950/40 text-emerald-400 border-emerald-500/30',
+          accentText: 'text-emerald-400',
+          ringStroke: '#10b981',
           badgeText: 'Synthetic Genomics'
         };
       case 'mindset_cognitive':
@@ -88,27 +96,51 @@ export const FrontierBentoGrid: React.FC<FrontierBentoGridProps> = ({
         };
       case 'quant_macro_finance':
         return {
-          glowBorder: 'hover:border-emerald-400 group-hover:shadow-[0_0_30px_rgba(16,185,129,0.25)]',
-          headerBg: 'bg-emerald-950/40 text-emerald-400 border-emerald-500/30',
-          accentText: 'text-emerald-400',
-          ringStroke: '#10b981',
+          glowBorder: 'hover:border-sky-400 group-hover:shadow-[0_0_30px_rgba(14,165,233,0.25)]',
+          headerBg: 'bg-sky-950/40 text-sky-400 border-sky-500/30',
+          accentText: 'text-sky-400',
+          ringStroke: '#0ea5e9',
           badgeText: 'Order Flow & GEX'
         };
       case 'crypto_defi_web3':
+        return {
+          glowBorder: 'hover:border-rose-400 group-hover:shadow-[0_0_30px_rgba(244,63,94,0.25)]',
+          headerBg: 'bg-rose-950/40 text-rose-400 border-rose-500/30',
+          accentText: 'text-rose-400',
+          ringStroke: '#f43f5e',
+          badgeText: 'Multi-Sig Vaults'
+        };
+      case 'ai_autonomous_swarms':
         return {
           glowBorder: 'hover:border-indigo-400 group-hover:shadow-[0_0_30px_rgba(99,102,241,0.25)]',
           headerBg: 'bg-indigo-950/40 text-indigo-400 border-indigo-500/30',
           accentText: 'text-indigo-400',
           ringStroke: '#6366f1',
-          badgeText: 'Multi-Sig Vaults'
-        };
-      case 'ai_autonomous_swarms':
-        return {
-          glowBorder: 'hover:border-sky-400 group-hover:shadow-[0_0_30px_rgba(14,165,233,0.25)]',
-          headerBg: 'bg-sky-950/40 text-sky-400 border-sky-500/30',
-          accentText: 'text-sky-400',
-          ringStroke: '#0ea5e9',
           badgeText: 'Autonomous DAG'
+        };
+      case 'game_dev_media':
+        return {
+          glowBorder: 'hover:border-fuchsia-400 group-hover:shadow-[0_0_30px_rgba(217,70,239,0.25)]',
+          headerBg: 'bg-fuchsia-950/40 text-fuchsia-400 border-fuchsia-500/30',
+          accentText: 'text-fuchsia-400',
+          ringStroke: '#d946ef',
+          badgeText: 'Godot & Shaders'
+        };
+      case 'fullstack_web_mobile':
+        return {
+          glowBorder: 'hover:border-teal-400 group-hover:shadow-[0_0_30px_rgba(20,184,166,0.25)]',
+          headerBg: 'bg-teal-950/40 text-teal-400 border-teal-500/30',
+          accentText: 'text-teal-400',
+          ringStroke: '#14b8a6',
+          badgeText: 'Edge & Full-Stack'
+        };
+      case 'digital_business':
+        return {
+          glowBorder: 'hover:border-orange-400 group-hover:shadow-[0_0_30px_rgba(249,115,22,0.25)]',
+          headerBg: 'bg-orange-950/40 text-orange-400 border-orange-500/30',
+          accentText: 'text-orange-400',
+          ringStroke: '#f97316',
+          badgeText: 'Solopreneur Moats'
         };
       default:
         return {
@@ -126,16 +158,17 @@ export const FrontierBentoGrid: React.FC<FrontierBentoGridProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
         <div>
           <span className="font-mono text-xs font-bold text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" /> 7 FRONTIER FACULTIES BENTO GRID
+            <Sparkles className="w-3.5 h-3.5" /> 10 FRONTIER FACULTIES BENTO GRID
           </span>
           <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white mt-0.5">
             Polymath Curriculum Matrix
           </h3>
         </div>
         <span className="font-mono text-xs text-zinc-400">
-          Click to inspect syllabus · Launch sandboxes directly
+          Click any faculty to explore syllabus · 519 interactive lessons
         </span>
       </div>
+
 
       {/* Asymmetric Rich Bento Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

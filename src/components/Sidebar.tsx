@@ -173,7 +173,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   >
                     <div className="flex items-center gap-2 truncate">
                       <span className="font-mono text-[10px] text-zinc-600">
-                        0{idx + 1}
+                        {idx < 9 ? '0' : ''}{idx + 1}
                       </span>
                       <span className="truncate">{faculty.shortTitle}</span>
                     </div>

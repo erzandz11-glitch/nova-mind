@@ -6,8 +6,6 @@ import {
   Flame,
   Zap,
   Wallet,
-  Volume2,
-  VolumeX,
   Command,
   Activity,
   Award,
@@ -22,8 +20,8 @@ interface HeaderProps {
   userState: UserGamificationState;
   onToggleSidebar: () => void;
   onOpenWalletModal: () => void;
-  soundEnabled: boolean;
-  onToggleSound: () => void;
+  soundEnabled?: boolean;
+  onToggleSound?: () => void;
   activeFacultyId?: FrontierFacultyId;
   onSelectFaculty?: (id: FrontierFacultyId) => void;
 }
@@ -32,8 +30,6 @@ export const Header: React.FC<HeaderProps> = ({
   userState,
   onToggleSidebar,
   onOpenWalletModal,
-  soundEnabled,
-  onToggleSound,
   activeFacultyId
 }) => {
   const navigate = useNavigate();
@@ -218,26 +214,11 @@ export const Header: React.FC<HeaderProps> = ({
           title="Open Sovereign Proof of Mastery Passport"
         >
           <Award className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="hidden sm:inline">PASSPORT</span>
-        </button>
-
-        {/* 5. Acoustic SFX Feedback Toggle */}
-        <button
-          onClick={() => {
-            soundEngine.playClick();
-            onToggleSound();
-          }}
-          className="p-2 rounded-xl bg-zinc-900/60 hover:bg-zinc-850 border border-white/10 hover:border-cyan-500/40 text-zinc-400 hover:text-cyan-300 transition-all cursor-pointer"
-          title={soundEnabled ? 'Acoustic audio synthesis enabled' : 'Muted'}
-        >
-          {soundEnabled ? (
-            <Volume2 className="w-4 h-4 text-cyan-400" />
-          ) : (
-            <VolumeX className="w-4 h-4 text-zinc-600" />
-          )}
+          <span className="hidden sm:inline">SKILL PASSPORT</span>
         </button>
       </div>
     </header>
+
 
     {/* Skill Passport Modal */}
     <SkillPassportModal

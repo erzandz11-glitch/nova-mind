@@ -189,7 +189,7 @@ export const InteractiveLessonModal: React.FC<InteractiveLessonModalProps> = ({
               <div className="p-4 sm:p-5 rounded-xl bg-cyan-950/20 border border-cyan-500/30 space-y-2">
                 <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs font-bold tracking-wider">
                   <Sparkles className="w-4 h-4" />
-                  <span>CORE INTEL & TELEMETRY</span>
+                  <span>PEMBAHASAN MATERI UTAMA</span>
                 </div>
                 <p className="text-sm sm:text-base text-zinc-200 leading-relaxed font-sans">
                   {lesson.keyTakeaway}
@@ -202,7 +202,7 @@ export const InteractiveLessonModal: React.FC<InteractiveLessonModalProps> = ({
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-mono text-zinc-400 flex items-center gap-1.5">
                       <Code2 className="w-3.5 h-3.5 text-cyan-400" />
-                      TECHNICAL IMPLEMENTATION / CODE SPEC
+                      CONTOH KODE & IMPLEMENTASI
                     </span>
                     <button
                       onClick={handleCopyCode}
@@ -216,7 +216,7 @@ export const InteractiveLessonModal: React.FC<InteractiveLessonModalProps> = ({
                       ) : (
                         <>
                           <Copy className="w-3.5 h-3.5" />
-                          <span>Copy Code</span>
+                          <span>Salin Kode</span>
                         </>
                       )}
                     </button>
@@ -231,7 +231,7 @@ export const InteractiveLessonModal: React.FC<InteractiveLessonModalProps> = ({
               {lesson.formula && (
                 <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/30 space-y-1.5">
                   <span className="text-[11px] font-mono text-amber-400 font-bold uppercase tracking-wider block">
-                    MATHEMATICAL / ASYMMETRIC FORMULA:
+                    FORMULA & PERHITUNGAN STRATEGIS:
                   </span>
                   <div className="font-mono text-sm sm:text-base text-amber-200 bg-black/40 p-3 rounded-lg border border-amber-500/20">
                     <code>{lesson.formula}</code>
@@ -247,7 +247,7 @@ export const InteractiveLessonModal: React.FC<InteractiveLessonModalProps> = ({
                     className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30 border border-amber-500/40 text-amber-300 font-mono text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Zap className="w-4 h-4 fill-current" />
-                    <span>Uji Pemahaman: Kerjakan Interactive Drill (+35 XP)</span>
+                    <span>Uji Pemahaman: Kerjakan Kuis Singkat (+35 XP)</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -262,14 +262,15 @@ export const InteractiveLessonModal: React.FC<InteractiveLessonModalProps> = ({
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-amber-400 font-bold flex items-center gap-1.5">
                     <Zap className="w-4 h-4 fill-current" />
-                    SOCRATIC EVALUATION DRILL
+                    KUIS EVALUASI PEMAHAMAN
                   </span>
-                  <span className="text-zinc-500">Pilih 1 jawaban yang paling tepat</span>
+                  <span className="text-zinc-400">Pilih 1 jawaban yang paling tepat</span>
                 </div>
                 <h3 className="text-base sm:text-lg font-semibold text-white leading-snug">
                   {drill.prompt}
                 </h3>
               </div>
+
 
               {/* Options */}
               <div className="space-y-2.5">
